@@ -22,6 +22,7 @@ export default function Widgets({ newsResults, randomUsersResults }) {
                 <AnimatePresence>
                     {newsResults.slice(0, articleNum).map((article) => (
                         <motion.div
+                            key={article.title}
                             initial={{opacity: 0}}
                             animate={{opacity: 1}}
                             exit={{opacity: 0}}
@@ -38,6 +39,7 @@ export default function Widgets({ newsResults, randomUsersResults }) {
                 <AnimatePresence>
                 {randomUsersResults.slice(0, userNum).map((user) => (
                     <motion.div
+                        key={user.login.username}
                         initial={{opacity: 0}}
                         animate={{opacity: 1}}
                         exit={{opacity: 0}}
