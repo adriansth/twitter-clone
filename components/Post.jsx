@@ -1,9 +1,9 @@
 import { EllipsisHorizontalIcon, ChatBubbleOvalLeftEllipsisIcon, TrashIcon, HeartIcon, ShareIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartIconFilled } from '@heroicons/react/24/solid';
 import Moment from 'react-moment';
-import { setDoc, doc, onSnapshot, collection } from 'firebase/firestore';
+import { setDoc, doc, onSnapshot, collection, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 
 
@@ -24,14 +24,22 @@ export default function Post({post}) {
 
     useEffect(() => {
         setHasLikes(likes.findIndex((like) => {
-            like.id === session.user.uid;
+            like.id === session?.user.uid;
         }) !== -1);
     }, [likes]);
 
     const likePost = async () => {
-        await setDoc(doc(db, 'posts', post.id, 'likes', session.user.uid), {
-            username: session.user.username,
-        });
+        if (session) {
+            if (hasLikes) {
+                await deleteDoc(doc(db, "posts", post.id, "likes", session?.user.uid));
+            } else {
+                await setDoc(doc(db, 'posts', post.id, 'likes', session?.user.uid), {
+                    username: session.user.username,
+                });
+            }
+        } else {
+            signIn();
+        }
     }
 
     return(
@@ -62,11 +70,18 @@ export default function Post({post}) {
                     <ChatBubbleOvalLeftEllipsisIcon className='h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100' />
                     <TrashIcon className='h-9 w-9 hoverEffect p-2 hover:text-red-600 hover:bg-red-100' />
 
-                    {hasLikes ? (
-                        <HeartIconFilled onClick={likePost} className='h-9 w-9 hoverEffect p-2 text-red-600 hover:bg-red-100' />
-                    ) : (
-                        <HeartIcon onClick={likePost} className='h-9 w-9 hoverEffect p-2 hover:text-red-600 hover:bg-red-100' />
-                    )}
+                    <div className='flex items-center'>
+                        {hasLikes ? (
+                            <HeartIconFilled onClick={likePost} className='h-9 w-9 hoverEffect p-2 text-red-600 hover:bg-red-100' />
+                        ) : (
+                            <HeartIcon onClick={likePost} className='h-9 w-9 hoverEffect p-2 hover:text-red-600 hover:bg-red-100' />
+                        )}
+                        {
+                            likes.length > 0 && (
+                                <span className={`${hasLikes && 'text-red-600'} text-sm select-none`}>{likes.length}</span>
+                            )
+                        }
+                    </div>
 
                     <ShareIcon className='h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100' />
                     <ChartBarIcon className='h-9 w-9 hoverEffect p-2 hover:text-sky-500 hover:bg-sky-100' />
