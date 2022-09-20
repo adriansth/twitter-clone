@@ -10,22 +10,33 @@ import Sidebar from '../../components/Sidebar';
 import Widgets from '../../components/Widgets';
 import CommentModal from '../../components/CommentModal';
 import Post from '../../components/Post';
+import Comment from '../../components/Comment';
 
 // Icons
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 // Fireabase 
 import { db } from '../../firebase';
-import { onSnapshot, doc } from '@firebase/firestore';
+import { onSnapshot, doc, collection, query, orderBy } from '@firebase/firestore';
+import { comment } from 'postcss';
 
 export default function PostPage({ newsResults, randomUsersResults }) {
 
   const router = useRouter();
   const { id } = router.query;
   const [post, setPost] = useState();
+  const [comments, setComments] = useState([]);
 
+  // Get post data. 
   useEffect(() => {
     onSnapshot(doc(db, 'posts', id), (snapshot) => setPost[snapshot]);
+  }, [db, id]);
+
+  // Get comments data.
+  useEffect(() => {
+    onSnapshot(query(collection(db, 'posts', id, 'comments'), orderBy('timestamp', 'desc')),
+      (snapshot) => setComments(snapshot.docs)
+    );
   }, [db, id]);
 
   return (
@@ -48,6 +59,15 @@ export default function PostPage({ newsResults, randomUsersResults }) {
               <h2 className='text-lg sm:text-xl font-bold cursor-pointer'>Tweet</h2>
             </div>
             <Post id={id} post={post} />
+
+            {comment.length > 0 && (
+              <div>
+                {comments.map((comment) => (
+                    <Comment key={comment.id} id={comment.id} comment={comment.data()} />
+                  ))}
+              </div>
+            )}
+
           </div>
           
           {/* Widgets */}
