@@ -34,7 +34,7 @@ export default function CommentModal() {
         });
         setOpen(false);
         setInput('');
-        router.push(`posts/${post.id}`);
+        router.push(`/posts/${post.id}`);
     }
 
     return(
