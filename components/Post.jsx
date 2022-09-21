@@ -43,14 +43,14 @@ export default function Post({post, id}) {
         setHasLikes(likes.findIndex((like) => {
             like.id === session?.user.uid;
         }) !== -1);
-    }, [likes]);
+    }, [likes, session]);
 
     const likePost = async () => {
         if (session) {
             if (hasLikes) {
-                await deleteDoc(doc(db, "posts", id, "likes", session?.user.uid));
+                await deleteDoc(doc(db, "posts", id, "likes", session?.user?.uid));
             } else {
-                await setDoc(doc(db, 'posts', id, 'likes', session?.user.uid), {
+                await setDoc(doc(db, 'posts', id, 'likes', session?.user?.uid), {
                     username: session.user.username,
                 });
             }
@@ -72,7 +72,7 @@ export default function Post({post, id}) {
     return(
         <div className='flex p-3 cursor-pointer border-b border-gray-200'>
             {/* User image */}
-            <img className='h-11 w-11 rounded-full mr-4' src={post?.data()?.userImg} alt="user-img" />
+            <img className='h-11 w-11 rounded-full mr-4' src={post?.data()?.userImg} alt='user-img' />
             {/* Right side */}
             <div className='flex-1'>
                 {/* Header */}

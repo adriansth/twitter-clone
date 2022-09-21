@@ -5,6 +5,9 @@ import { useRouter } from 'next/router';
 // React
 import { useEffect, useState } from 'react';
 
+// Animations
+import { AnimatePresence, motion } from 'framer-motion';
+
 // Components
 import Sidebar from '../../components/Sidebar';
 import Widgets from '../../components/Widgets';
@@ -58,18 +61,29 @@ export default function PostPage({ newsResults, randomUsersResults }) {
               </div>
               <h2 className='text-lg sm:text-xl font-bold cursor-pointer'>Tweet</h2>
             </div>
+
             <Post id={id} post={post} />
 
-            {comment.length > 0 && (
+            {comments.length > 0 && (
               <div>
-                {comments.map((comment) => (
-                    <Comment 
-                      key={comment.id} 
-                      commentId={comment.id} 
-                      originalPostId={id}
-                      comment={comment.data()} 
-                    />
-                  ))}
+                <AnimatePresence>
+                    {comments.map((comment) => (
+                      <motion.div
+                      key={comment.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 1 }}
+                      >
+                        <Comment 
+                          key={comment.id} 
+                          commentId={comment.id} 
+                          originalPostId={id}
+                          comment={comment.data()} 
+                        />
+                      </motion.div>
+                      ))}
+                  </AnimatePresence>
               </div>
             )}
 
