@@ -10,7 +10,7 @@ export default function signin({providers}) {
             />
             <div>
                 {Object.values(providers).map((provider) => (
-                    <div className='flex flex-col items-center'>
+                    <div key={provider.name} className='flex flex-col items-center'>
                         <img className='w-36 object-cover' src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Twitter-logo.svg/2491px-Twitter-logo.svg.png" alt="twitter logo" />
                         <p className='text-sm italic my-10'>This app was created for learning purposes.</p>
                         <button onClick={() => signIn(provider.id, {callbackUrl: '/'})} className='bg-red-400 rounded-lg p-3 text-white hover:bg-red-500'>Sign in with {provider.name}</button>
